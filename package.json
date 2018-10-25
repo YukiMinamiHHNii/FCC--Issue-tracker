@@ -1,0 +1,37 @@
+{
+  "name": "issue-tracker",
+  "version": "1.0.0",
+  "description": "Issue tracker project for freeCodeCamp QA and InfoSec certification",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha --ui tdd src/tests",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YukiMinamiHHNii/FCC--Issue-tracker.git"
+  },
+  "keywords": [
+    "freeCodeCamp",
+    "QA",
+    "InfoSec"
+  ],
+  "author": "YukiMinamiHHNii",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/YukiMinamiHHNii/FCC--Issue-tracker/issues"
+  },
+  "homepage": "https://github.com/YukiMinamiHHNii/FCC--Issue-tracker#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.0",
+    "dotenv": "^6.1.0",
+    "express": "^4.16.4",
+    "helmet": "^3.14.0",
+    "mocha": "^5.2.0",
+    "mongodb": "^3.1.8",
+    "mongoose": "^5.3.6",
+    "pug": "^2.0.3"
+  }
+}

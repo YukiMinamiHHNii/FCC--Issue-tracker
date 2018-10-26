@@ -1,0 +1,97 @@
+:root {
+	--font-size: 16px;
+	--font-family: sans-serif;
+	--font-color: #fff;
+	--color-main: #282923;
+	--color-secondary: #404040;
+	--pad-btn: #c4c5c9;
+	--pad-btn-active: #f98d11;
+	--general-spacing: .5rem;
+}
+
+html {
+	font-family: var(--font-family);
+	font-size: var(--font-size);
+	color: var(--font-color);
+	line-height: 1.6;
+	box-sizing: border-box;
+	background-color: var(--color-main);
+}
+
+a {
+	color: var(--pad-btn-active);
+}
+
+*,
+*:after,
+*:before {
+	box-sizing: inherit;
+	margin: 0;
+	padding: 0;
+}
+
+#root {
+	padding: 1rem 0;
+	margin: 0 auto;
+	min-height: 100vh;
+	max-width: 80%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
+#action{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+}
+
+.action-form{
+	margin: var(--general-spacing);
+	padding: var(--general-spacing);
+	background-color: var(--color-secondary);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	flex-grow: 1;
+	flex-basis: 0;
+}
+
+.form-section{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.form-submit, .header{
+	text-align: center;
+}
+
+label{
+	padding: var(--general-spacing);
+}
+
+input {
+	padding: var(--general-spacing);
+	width: 60%;
+}
+
+textarea{
+	width: 60%;
+	resize: none;
+}
+
+input[type="submit"] {
+	border: none;
+	background-color: var(--pad-btn);
+	margin: var(--general-spacing) 0;
+	align-self: flex-end;
+	width: 50%;
+}
+
+input[type="submit"]:hover {
+	background-color: var(--pad-btn-active);
+	color: var(--font-color);
+}

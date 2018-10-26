@@ -8,7 +8,12 @@ const app= express();
 app.set('view engine', 'pug');
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(helmet.xssFilter());
 app.use(helmet.noSniff());
+
+app.use('/', (req, res)=>{
+	res.render('index');
+})
 
 app.listen(process.env.SERVER_PORT);
 console.log(`App listening on port ${process.env.SERVER_PORT}`);

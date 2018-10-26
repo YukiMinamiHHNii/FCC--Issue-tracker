@@ -30,39 +30,18 @@ a {
 	padding: 0;
 }
 
-#root {
-	padding: 1rem 0;
-	margin: 0 auto;
-	min-height: 100vh;
-	max-width: 80%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-}
-
-#action{
-	display: flex;
-	flex-direction: row;
-	justify-content: space-evenly;
+body{
+	padding: var(--general-spacing);
 }
 
 .action-form{
 	margin: var(--general-spacing);
 	padding: var(--general-spacing);
 	background-color: var(--color-secondary);
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	flex-grow: 1;
-	flex-basis: 0;
 }
 
-.form-section{
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
+.spacing{
+	margin: var(--general-spacing);
 }
 
 .form-submit, .header{
@@ -73,13 +52,11 @@ label{
 	padding: var(--general-spacing);
 }
 
-input {
+input, textarea {
 	padding: var(--general-spacing);
-	width: 60%;
 }
 
 textarea{
-	width: 60%;
 	resize: none;
 }
 
@@ -87,8 +64,6 @@ input[type="submit"] {
 	border: none;
 	background-color: var(--pad-btn);
 	margin: var(--general-spacing) 0;
-	align-self: flex-end;
-	width: 50%;
 }
 
 input[type="submit"]:hover {

@@ -2,79 +2,94 @@
 html(lang="en")
 head
 	meta(charset="UTF-8")
+	link(rel="stylesheet", href="/css/bootstrap-grid.css")
 	link(rel="stylesheet", href="/css/style.css")
 	title FCC -- Issue Tracker
 body
-	main#root
-		h2 Issue Tracker Project
-		h3 Requirements
-		ul
-			li Prevent cross site scripting(XSS attack).
-			li I can POST /api/issues/{projectname} with form data containing required issue_title, issue_text, created_by, and optional assigned_to and status_text.
-			li The object saved (and returned) will include all of those fields (blank for optional no input) and also include created_on(date/time), updated_on(date/time), open(boolean, true for open, false for closed), and _id.
-			li I can PUT /api/issues/{projectname} with a _id and any fields in the object with a value to object said object. Returned will be 'successfully updated' or 'could not update '+_id. This should always update updated_on. If no fields are sent return 'no updated field sent'.
-			li I can DELETE /api/issues/{projectname} with a _id to completely delete an issue. If no _id is sent return '_id error', success: 'deleted '+_id, failed: 'could not delete '+_id.
-			li I can GET /api/issues/{projectname} for an array of all issues on that specific project with all the information for each issue as was returned when posted.
-			li I can filter my get request by also passing along any field and value in the query(ie. /api/issues/{project}?open=false). I can pass along as many fields/values as I want.
-			li All 11 functional tests are complete and passing.
-		h3 Example get usage:
-		p /api/issues/{project}
-		p /api/issues/{project}?open=true&amp;assigned_to=Joe
-		h3 Example return:
-		p [{"_id":"5871dda29faedc3491ff93bb","issue_title":"Fix error in posting data","issue_text":"When we post data it has an error.","created_on":"2017-01-08T06:35:14.240Z","updated_on":"2017-01-08T06:35:14.240Z","created_by":"Joe","assigned_to":"Joe","open":true,"status_text":"In QA"},...]
-		h2 
-			a(href="/apitest/") EXAMPLE: Go to /apitest/ project issues
-		h2 API tests:
-		section#action
-			form.action-form(method='POST' action='/api/issues/apitest')
-				h3.header Submit issue on apitest
-				div.form-section
-					label(for="issue_title") Title:
-					input(type="text" name="issue_title" placeholder='*Title' required)
-				div.form-section
-					label(for="issue_text") Desc:
-					textarea(name="issue_text" placeholder='*Text' required)
-				div.form-section
-					label(for="created_by") Created by:
-					input(type="text" name="created_by" placeholder='*Created by' required)
-				div.form-section
-					label(for="assigned_to") Assigned to:
-					input(type="text" name="assigned_to" placeholder='(opt)Assigned to')
-				div.form-section
-					label(for="status_text") Status:
-					input(type="text" name="status_text" placeholder='(opt)Status text')
-				div.form-submit
-					input(type="submit" value='Submit issue')
-			form.action-form(method='PUT' action='/api/issues/apitest')
-				h3.header Update issue on apitest
-				p (Change any or all to update issue on the _id supplied)
-				div.form-section
-					label(for="issue_id") Issue ID:
-					input(type="text" name="issue_id" placeholder='*ID' required)
-				div.form-section
-					label(for="issue_title") Title:
-					input(type="text" name="issue_title" placeholder='(opt)Title')
-				div.form-section
-					label(for="issue_text") Desc:
-					textarea(name="issue_text" placeholder='(opt)Text')
-				div.form-section
-					label(for="created_by") Created by:
-					input(type="text" name="created_by" placeholder='(opt)Assigned to')
-				div.form-section
-					label(for="assigned_to") Assigned to:
-					input(type="text" name="assigned_to" placeholder='(opt)Assigned to')
-				div.form-section
-					label(for="status_text") Status:
-					input(type="text" name="status_text" placeholder='(opt)Status text')
-				div.form-section
-					label(for='open') Close issue:
-					input(type="checkbox" name='open')
-				div.form-submit
-					input(type="submit" value='Submit issue')
-			form.action-form(method='DELETE' action='/api/issues/apitest')
-				h3.header Delete issue on apitest
-				div.form-section
-					label(for="issue_id") Issue ID:
-					input(type="text" name="issue_id" placeholder='*ID' required)
-				div.form-submit
-					input(type="submit" value='Delete issue')
+	main.container
+		section.row.align-items-center.flex-column
+			h2 Issue Tracker Project
+			h3 Requirements
+			ul
+				li Prevent cross site scripting(XSS attack).
+				li I can POST /api/issues/{projectname} with form data containing required issue_title, issue_text, created_by, and optional assigned_to and status_text.
+				li The object saved (and returned) will include all of those fields (blank for optional no input) and also include created_on(date/time), updated_on(date/time), open(boolean, true for open, false for closed), and _id.
+				li I can PUT /api/issues/{projectname} with a _id and any fields in the object with a value to object said object. Returned will be 'successfully updated' or 'could not update '+_id. This should always update updated_on. If no fields are sent return 'no updated field sent'.
+				li I can DELETE /api/issues/{projectname} with a _id to completely delete an issue. If no _id is sent return '_id error', success: 'deleted '+_id, failed: 'could not delete '+_id.
+				li I can GET /api/issues/{projectname} for an array of all issues on that specific project with all the information for each issue as was returned when posted.
+				li I can filter my get request by also passing along any field and value in the query(ie. /api/issues/{project}?open=false). I can pass along as many fields/values as I want.
+				li All 11 functional tests are complete and passing.
+			h3 Example get usage:
+			p /api/issues/{project}
+			p /api/issues/{project}?open=true&amp;assigned_to=Joe
+			h3 Example return:
+			code 
+				|[{
+				|"_id":"5871dda29faedc3491ff93bb",
+				|	"issue_title":"Fix error in posting data",
+				|"issue_text":"When we post data it has an error.",
+				|"created_on":"2017-01-08T06:35:14.240Z",
+				|"updated_on":"2017-01-08T06:35:14.240Z",
+				|"created_by":"Joe",
+				|"assigned_to":"Joe",
+				|"open":true,
+				|"status_text":"In QA"},{...}]
+			h2 
+				a(href="/apitest/") EXAMPLE: Go to /apitest/ project issues
+			h2 API tests:
+		section.row
+			form.col-sm-12.col-lg-4.d-flex.flex-column.justify-content-center(method='POST' action='/api/issues/apitest')
+				div.action-form
+					h3.header Submit issue on apitest
+					div.row.spacing
+						label.col-sm-6(for="issue_title") Title:
+						input.col-sm-6(type="text" name="issue_title" placeholder='*Title' required)
+					div.row.spacing
+						label.col-sm-6(for="issue_text") Desc:
+						textarea.col-sm-6(name="issue_text" placeholder='*Text' required)
+					div.row.spacing
+						label.col-sm-6(for="created_by") Created by:
+						input.col-sm-6(type="text" name="created_by" placeholder='*Created by' required)
+					div.row.spacing
+						label.col-sm-6(for="assigned_to") Assigned to:
+						input.col-sm-6(type="text" name="assigned_to" placeholder='(opt)Assigned to')
+					div.row.spacing
+						label.col-sm-6(for="status_text") Status:
+						input.col-sm-6(type="text" name="status_text" placeholder='(opt)Status text')
+					div.row.justify-content-center
+						input.col-sm-6(type="submit" value='Submit issue')
+			form.col-sm-12.col-lg-4.d-flex.flex-column.justify-content-center(method='PUT' action='/api/issues/apitest')
+				div.action-form
+					h3.header Update issue on apitest
+					p.header (Change any or all to update issue on the _id supplied)
+					div.row.spacing
+						label.col-sm-6(for="issue_id") Issue ID:
+						input.col-sm-6(type="text" name="issue_id" placeholder='*ID' required)
+					div.row.spacing
+						label.col-sm-6(for="issue_title") Title:
+						input.col-sm-6(type="text" name="issue_title" placeholder='(opt)Title')
+					div.row.spacing
+						label.col-sm-6(for="issue_text") Desc:
+						textarea.col-sm-6(name="issue_text" placeholder='(opt)Text')
+					div.row.spacing
+						label.col-sm-6(for="created_by") Created by:
+						input.col-sm-6(type="text" name="created_by" placeholder='(opt)Assigned to')
+					div.row.spacing
+						label.col-sm-6(for="assigned_to") Assigned to:
+						input.col-sm-6(type="text" name="assigned_to" placeholder='(opt)Assigned to')
+					div.row.spacing
+						label.col-sm-6(for="status_text") Status:
+						input.col-sm-6(type="text" name="status_text" placeholder='(opt)Status text')
+					div.row.spacing
+						label.col-sm-6(for='open') Close issue:
+						input.col-sm-6(type="checkbox" name='open')
+					div.row.justify-content-center
+						input.col-sm-6(type="submit" value='Submit issue')
+			form.col-sm-12.col-lg-4.d-flex.flex-column.justify-content-center(method='DELETE' action='/api/issues/apitest')
+				div.action-form
+					h3.header Delete issue on apitest
+					div.row.spacing
+						label.col-sm-6(for="issue_id") Issue ID:
+						input.col-sm-6(type="text" name="issue_id" placeholder='*ID' required)
+					div.row.justify-content-center
+						input.col-sm-6(type="submit" value='Delete issue')

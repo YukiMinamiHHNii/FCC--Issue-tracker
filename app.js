@@ -9,6 +9,7 @@ const app = express();
 
 app.set("view engine", "pug");
 app.use(express.static(__dirname + "/public"));
+//app.use(bodyParser.json()); //Use it if you need to allow json from something that is not a form
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
 	methodOver((req, res) => {
@@ -22,11 +23,13 @@ app.use(
 app.use(helmet.xssFilter());
 app.use(helmet.noSniff());
 
-app.use("/api/issues", issuesRouter);
+app.use("/api", issuesRouter);
 
-app.use("/", (req, res) => {
+app.get("/", (req, res) => {
 	res.render("index");
 });
 
 app.listen(process.env.SERVER_PORT);
 console.log(`App listening on port ${process.env.SERVER_PORT}`);
+
+module.exports = app;

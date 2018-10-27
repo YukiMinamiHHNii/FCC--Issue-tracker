@@ -37,7 +37,10 @@ exports.createIssue = (projectName, issueData, result) => {
 					  });
 				new Issue(issueData).save((err, savedIssue) => {
 					if (err) {
-						return result({ status: "Error while saving issue", error: error }); //Remove error later
+						return result({
+							status: "Error while saving issue... are you missing fields?",
+							error: error
+						}); //Remove error later
 					} else {
 						saveProject(projData, savedIssue._id, savedProj => {
 							return result(savedIssue);

@@ -58,7 +58,7 @@ body
 						input.col-sm-6(type="text" name="status_text" placeholder='(opt)Status text')
 					div.row.justify-content-center
 						input.col-sm-6(type="submit" value='Submit issue')
-			form.col-sm-12.col-lg-4.d-flex.flex-column.justify-content-center(method='PUT' action='/api/issues/apitest')
+			form.col-sm-12.col-lg-4.d-flex.flex-column.justify-content-center(method='POST' action='/api/issues/apitest')
 				div.action-form
 					h3.header Update issue on apitest
 					p.header (Change any or all to update issue on the _id supplied)
@@ -84,12 +84,14 @@ body
 						label.col-sm-6(for='open') Close issue:
 						input.col-sm-6(type="checkbox" name='open')
 					div.row.justify-content-center
+						input(type="hidden" name="_method" value="PUT")
 						input.col-sm-6(type="submit" value='Submit issue')
-			form.col-sm-12.col-lg-4.d-flex.flex-column.justify-content-center(method='DELETE' action='/api/issues/apitest')
+			form.col-sm-12.col-lg-4.d-flex.flex-column.justify-content-center(method='POST' action='/api/issues/apitest')
 				div.action-form
 					h3.header Delete issue on apitest
 					div.row.spacing
 						label.col-sm-6(for="issue_id") Issue ID:
 						input.col-sm-6(type="text" name="issue_id" placeholder='*ID' required)
 					div.row.justify-content-center
+						input(type="hidden" name="_method" value="DELETE")
 						input.col-sm-6(type="submit" value='Delete issue')

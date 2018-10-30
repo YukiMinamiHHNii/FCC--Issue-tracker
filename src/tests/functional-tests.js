@@ -101,15 +101,55 @@ suite("Functional Tests", () => {
 		});
 	});
 
-	/*suite("PUT /api/issues/{project} => text", () => {
-		test("No body", done => {});
+	suite("PUT /api/issues/{project} => text", () => {
+		test("No body", done => {
+			chai
+				.request(app)
+				.put("/api/issues/test")
+				.type("form")
+				.send({ id: "some_id", issue_data: {} })
+				.end((err, res) => {
+					assert.equal(res.body.status, "No updated field sent");
+					done();
+				});
+		});
 
-		test("One field to update", done => {});
+		test("One field to update", done => {
+			chai
+				.request(app)
+				.put("/api/issues/test")
+				.type("form")
+				.send({
+					issue_id: "5bd3bc388e9b7b18b8c92938",
+					issue_data: { issue_title: "Functional Test - One Field to Update" }
+				})
+				.end((err, res) => {
+					assert.equal(res.body.status, "Successfully updated");
+					done();
+				});
+		});
 
-		test("Multiple fields to update", done => {});
+		test("Multiple fields to update", done => {
+			chai
+				.request(app)
+				.put("/api/issues/test")
+				.type("form")
+				.send({
+					issue_id: "5bd3bc388e9b7b18b8c92938",
+					issue_data: {
+						issue_title: "Functional Test - Multiple Fields to Update",
+						issue_text: "MultipleFieldsUpdated",
+						created_by: "Functional Test2"
+					}
+				})
+				.end((err, res) => {
+					assert.equal(res.body.status, "Successfully updated");
+					done();
+				});
+		});
 	});
 
-	suite("GET /api/issues/{project} => Array of objects with issue data", () => {
+	/*suite("GET /api/issues/{project} => Array of objects with issue data", () => {
 		test("No filter", done => {
 			chai
 				.request(app)

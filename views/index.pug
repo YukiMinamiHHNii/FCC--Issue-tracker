@@ -67,22 +67,22 @@ body
 						input.col-sm-6(type="text" name="issue_id" placeholder='*ID' required)
 					div.row.spacing
 						label.col-sm-6(for="issue_title") Title:
-						input.col-sm-6(type="text" name="issue_title" placeholder='(opt)Title')
+						input.col-sm-6(type="text" name="issue_data[issue_title]" placeholder='(opt)Title')
 					div.row.spacing
 						label.col-sm-6(for="issue_text") Desc:
-						textarea.col-sm-6(name="issue_text" placeholder='(opt)Text')
+						textarea.col-sm-6(name="issue_data[issue_text]" placeholder='(opt)Text')
 					div.row.spacing
 						label.col-sm-6(for="created_by") Created by:
-						input.col-sm-6(type="text" name="created_by" placeholder='(opt)Assigned to')
+						input.col-sm-6(type="text" name="issue_data[created_by]" placeholder='(opt)Assigned to')
 					div.row.spacing
 						label.col-sm-6(for="assigned_to") Assigned to:
-						input.col-sm-6(type="text" name="assigned_to" placeholder='(opt)Assigned to')
+						input.col-sm-6(type="text" name="issue_data[assigned_to]" placeholder='(opt)Assigned to')
 					div.row.spacing
 						label.col-sm-6(for="status_text") Status:
-						input.col-sm-6(type="text" name="status_text" placeholder='(opt)Status text')
+						input.col-sm-6(type="text" name="issue_data[status_text]" placeholder='(opt)Status text')
 					div.row.spacing
 						label.col-sm-6(for='open') Close issue:
-						input.col-sm-6(type="checkbox" name='open')
+						input.col-sm-6(type="checkbox" name="issue_data[open]")
 					div.row.justify-content-center
 						input(type="hidden" name="_method" value="PUT")
 						input.col-sm-6(type="submit" value='Submit issue')

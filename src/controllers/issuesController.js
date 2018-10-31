@@ -11,3 +11,9 @@ exports.updateIssue = (req, res) => {
 		return res.json(result);
 	});
 };
+
+exports.deleteIssue= (req, res)=>{
+	issuesDAO.deleteIssue(req.params.projectName, req.body, result=>{
+		return res.json(result);
+	})
+}

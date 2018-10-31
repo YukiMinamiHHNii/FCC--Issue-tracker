@@ -81,33 +81,38 @@ exports.updateIssue = (projectName, updateIssue, result) => {
 					error: error //Remove this later
 				});
 			} else {
-				checkProject({
-					projectName: projectName,
-					issues: updateIssue.issue_id
-				}, (err, dbRes) => {
-					if (err) {
-						return result(dbRes);
-					} else {
-						if (!dbRes) {
-							return result({
-								status: `Issue with id: ${updateIssue.issue_id} do not exist in ${projectName}`
-							});
+				checkProject(
+					{
+						projectName: projectName,
+						issues: updateIssue.issue_id
+					},
+					(err, dbRes) => {
+						if (err) {
+							return result(dbRes);
 						} else {
-							Issue.findOneAndUpdate(
-								{ _id: updateIssue.issue_id },
-								{ $set: checkData },
-								{ new: true }
-							).exec((err, updatedIssue) => {
-								return err
-									? result({
-											status: `Could not update ${updateIssue.issue_id}`,
-											error: err //Remove this later
-									  })
-									: result({ status: "Successfully updated" });
-							});
+							if (!dbRes) {
+								return result({
+									status: `Issue with id: ${
+										updateIssue.issue_id
+									} do not exist in ${projectName}`
+								});
+							} else {
+								Issue.findOneAndUpdate(
+									{ _id: updateIssue.issue_id },
+									{ $set: checkData },
+									{ new: true }
+								).exec((err, updatedIssue) => {
+									return err
+										? result({
+												status: `Could not update ${updateIssue.issue_id}`,
+												error: err //Remove this later
+										  })
+										: result({ status: "Successfully updated" });
+								});
+							}
 						}
 					}
-				});
+				);
 			}
 		});
 	}
@@ -122,4 +127,71 @@ function checkUpdateData(updateData) {
 		}
 	}
 	return Object.keys(result).length > 1 ? result : false;
+}
+
+exports.deleteIssue = (projectName, issueData, result) => {
+	if (!issueData.issue_id) {
+		return result({ status: "_id error" });
+	} else {
+		handleConnection((connected, error) => {
+			if (!connected) {
+				return result({
+					status: `Error while retrieving ${projectName} issues`,
+					error: error //Remove this later
+				});
+			} else {
+				checkProject(
+					{ projectName: projectName, issues: issueData.issue_id },
+					(err, dbRes) => {
+						if (err) {
+							return result(dbRes);
+						} else {
+							if (!dbRes) {
+								return result({
+									status: `Issue with id: ${
+										issueData.issue_id
+									} do not exist in ${projectName}`
+								});
+							} else {
+								removeRefIssue(
+									dbRes,
+									issueData.issue_id,
+									(status, removeRefError) => {
+										if (!status) {
+											return result(removeRefError);
+										} else {
+											Issue.findOneAndDelete({ _id: issueData.issue_id }).exec(
+												(err, res) => {
+													if (err) {
+														return result({
+															status: `Could not delete ${issueData.issue_id}`
+														});
+													} else {
+														return result({
+															status: `Deleted ${issueData.issue_id}`
+														});
+													}
+												}
+											);
+										}
+									}
+								);
+							}
+						}
+					}
+				);
+			}
+		});
+	}
+};
+
+function removeRefIssue(project, issueId, result) {
+	Project.update(project, { $pull: { issues: issueId } }, (err, res) => {
+		return err
+			? result(false, {
+					status: `Could not delete ${issueData.issue_id}`,
+					error: err
+			  })
+			: result(true);
+	});
 }

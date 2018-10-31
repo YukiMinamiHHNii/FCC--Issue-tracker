@@ -5,6 +5,8 @@ const chaiHttp = require("chai-http"),
 
 chai.use(chaiHttp);
 
+let testId;
+
 suite("Functional Tests", () => {
 	suite("POST /api/issues/{project} => object with issue data", () => {
 		test("Every field filled in", done => {
@@ -20,6 +22,7 @@ suite("Functional Tests", () => {
 					status_text: "In QA"
 				})
 				.end((err, res) => {
+					testId= res.body._id;
 					assert.equal(res.status, 200);
 					assert.isNotNull(res.body._id, "Object ID is not null");
 					assert.equal(res.body.issue_title, "Title");
@@ -120,7 +123,7 @@ suite("Functional Tests", () => {
 				.put("/api/issues/test")
 				.type("form")
 				.send({
-					issue_id: "5bd3bc388e9b7b18b8c92938",
+					issue_id: testId,
 					issue_data: { issue_title: "Functional Test - One Field to Update" }
 				})
 				.end((err, res) => {
@@ -135,7 +138,7 @@ suite("Functional Tests", () => {
 				.put("/api/issues/test")
 				.type("form")
 				.send({
-					issue_id: "5bd3bc388e9b7b18b8c92938",
+					issue_id: testId,
 					issue_data: {
 						issue_title: "Functional Test - Multiple Fields to Update",
 						issue_text: "MultipleFieldsUpdated",
@@ -144,6 +147,32 @@ suite("Functional Tests", () => {
 				})
 				.end((err, res) => {
 					assert.equal(res.body.status, "Successfully updated");
+					done();
+				});
+		});
+	});
+
+	suite("DELETE /api/issues/{project} => text", () => {
+		test("No _id", done => {
+			chai
+				.request(app)
+				.delete("/api/issues/test")
+				.type("form")
+				.send({ issue_id: "" })
+				.end((err, res) => {
+					assert.equal(res.body.status, "_id error");
+					done();
+				});
+		});
+
+		test("Valid _id", done => {
+			chai
+				.request(app)
+				.delete("/api/issues/test")
+				.type("form")
+				.send({ issue_id: testId })
+				.end((err, res) => {
+					assert.equal(res.body.status, `Deleted ${testId}`);
 					done();
 				});
 		});
@@ -174,11 +203,5 @@ suite("Functional Tests", () => {
 		test("One filter", done => {});
 
 		test("Multiple filters (test for multiple fields you know will be in the db for a return)", done => {});
-	});
-
-	suite("DELETE /api/issues/{project} => text", () => {
-		test("No _id", done => {});
-
-		test("Valid _id", done => {});
 	});*/
 });

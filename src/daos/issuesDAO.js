@@ -3,6 +3,8 @@ const mongoose = require("mongoose"),
 	Issue = require("../models/issueModel"),
 	dotenv = require("dotenv").load();
 
+const filters = [""];
+
 function handleConnection(connected) {
 	mongoose.connect(
 		process.env.MONGO_DB_CONNECTION,
@@ -37,7 +39,17 @@ exports.createIssue = (projectName, issueData, result) => {
 							}); //Remove error later
 						} else {
 							saveProject(projData, savedIssue._id, savedProj => {
-								return result(savedIssue);
+								return result({
+									_id: savedIssue._id,
+									issue_title: savedIssue.issue_title,
+									issue_text: savedIssue.issue_text,
+									created_on: savedIssue.created_on,
+									updated_on: savedIssue.updated_on,
+									created_by: savedIssue.created_by,
+									assigned_to: savedIssue.assigned_to,
+									open: savedIssue.open,
+									status_text: savedIssue.status_text
+								});
 							});
 						}
 					});
@@ -62,11 +74,49 @@ function checkProject(projectQuery, result) {
 
 function saveProject(project, issueId, result) {
 	project.issues.push(issueId);
-	project.save((err, savedProj) => {
+	project.save({}, (err, savedProj) => {
 		return err
 			? result({ status: "Error while saving issue to project", error: error }) //Remove error later
-			: result(savedProj);
+			: result({ _id: savedProj._id });
 	});
+}
+
+exports.readIssues = (projectName, filters, result) => {
+	handleConnection((connected, error) => {
+		if (!connected) {
+			return result({
+				status: `Error while retrieving ${projectName} issues`,
+				error: error //Remove this later
+			});
+		} else {
+			checkOpenFilter(filters);
+			Project.findOne({ projectName: projectName })
+				.populate({ path: "issues", select: { __v: 0 }, match: filters }) //Second argument to select just certain fields
+				.exec((err, res) => {
+					if (err) {
+						return result({
+							status: "Error, invalid filters",
+							error: err //Remove this later
+						});
+					} else {
+						return res ? result(res.issues) : result({});
+					}
+				});
+		}
+	});
+};
+
+function checkOpenFilter(filters) {
+	if (filters.hasOwnProperty("open")) {
+		switch (filters["open"].toLowerCase()) {
+			case "true":
+				filters["open"] = true;
+				break;
+			case "false":
+				filters["open"] = false;
+				break;
+		}
+	}
 }
 
 exports.updateIssue = (projectName, updateIssue, result) => {

@@ -22,7 +22,7 @@ suite("Functional Tests", () => {
 					status_text: "In QA"
 				})
 				.end((err, res) => {
-					testId= res.body._id;
+					testId = res.body._id;
 					assert.equal(res.status, 200);
 					assert.isNotNull(res.body._id, "Object ID is not null");
 					assert.equal(res.body.issue_title, "Title");
@@ -152,6 +152,76 @@ suite("Functional Tests", () => {
 		});
 	});
 
+	suite("GET /api/issues/{project} => Array of objects with issue data", () => {
+		test("No filter", done => {
+			chai
+				.request(app)
+				.get("/api/issues/test")
+				.query({})
+				.end((err, res) => {
+					assert.equal(res.status, 200);
+					assert.isArray(res.body);
+					assert.property(res.body[0], "issue_title");
+					assert.property(res.body[0], "issue_text");
+					assert.property(res.body[0], "created_on");
+					assert.property(res.body[0], "updated_on");
+					assert.property(res.body[0], "created_by");
+					assert.property(res.body[0], "assigned_to");
+					assert.property(res.body[0], "open");
+					assert.property(res.body[0], "status_text");
+					assert.property(res.body[0], "_id");
+					done();
+				});
+		});
+
+		test("One filter", done => {
+			chai
+				.request(app)
+				.get("/api/issues/test")
+				.query({ _id: testId })
+				.end((err, res) => {
+					assert.equal(res.status, 200);
+					assert.isArray(res.body);
+					assert.property(res.body[0], "issue_title");
+					assert.property(res.body[0], "issue_text");
+					assert.property(res.body[0], "created_on");
+					assert.property(res.body[0], "updated_on");
+					assert.property(res.body[0], "created_by");
+					assert.property(res.body[0], "assigned_to");
+					assert.property(res.body[0], "open");
+					assert.property(res.body[0], "status_text");
+					assert.property(res.body[0], "_id");
+					done();
+				});
+		});
+
+		test("Multiple filters (test for multiple fields you know will be in the db for a return)", done => {
+			chai
+				.request(app)
+				.get("/api/issues/test")
+				.query({
+					_id: testId,
+					issue_title: "Functional Test - Multiple Fields to Update",
+					issue_text: "MultipleFieldsUpdated",
+					created_by: "Functional Test2"
+				})
+				.end((err, res) => {
+					assert.equal(res.status, 200);
+					assert.isArray(res.body);
+					assert.property(res.body[0], "issue_title");
+					assert.property(res.body[0], "issue_text");
+					assert.property(res.body[0], "created_on");
+					assert.property(res.body[0], "updated_on");
+					assert.property(res.body[0], "created_by");
+					assert.property(res.body[0], "assigned_to");
+					assert.property(res.body[0], "open");
+					assert.property(res.body[0], "status_text");
+					assert.property(res.body[0], "_id");
+					done();
+				});
+		});
+	});
+
 	suite("DELETE /api/issues/{project} => text", () => {
 		test("No _id", done => {
 			chai
@@ -177,31 +247,4 @@ suite("Functional Tests", () => {
 				});
 		});
 	});
-
-	/*suite("GET /api/issues/{project} => Array of objects with issue data", () => {
-		test("No filter", done => {
-			chai
-				.request(app)
-				.get("/api/issues/test")
-				.query({})
-				.end((err, res) => {
-					assert.equal(res.status, 200);
-					assert.isArray(res.body);
-					assert.property(res.body[0], "issue_title");
-					assert.property(res.body[0], "issue_text");
-					assert.property(res.body[0], "created_on");
-					assert.property(res.body[0], "updated_on");
-					assert.property(res.body[0], "created_by");
-					assert.property(res.body[0], "assigned_to");
-					assert.property(res.body[0], "open");
-					assert.property(res.body[0], "status_text");
-					assert.property(res.body[0], "_id");
-					done();
-				});
-		});
-
-		test("One filter", done => {});
-
-		test("Multiple filters (test for multiple fields you know will be in the db for a return)", done => {});
-	});*/
 });

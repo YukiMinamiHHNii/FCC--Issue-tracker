@@ -6,14 +6,20 @@ exports.createIssue = (req, res) => {
 	});
 };
 
-exports.updateIssue = (req, res) => {
-	issuesDAO.updateIssue(req.params.projectName, req.body, result=>{
+exports.readIssues = (req, res) => {
+	issuesDAO.readIssues(req.params.projectName, req.query, result => {
 		return res.json(result);
 	});
 };
 
-exports.deleteIssue= (req, res)=>{
-	issuesDAO.deleteIssue(req.params.projectName, req.body, result=>{
+exports.updateIssue = (req, res) => {
+	issuesDAO.updateIssue(req.params.projectName, req.body, result => {
 		return res.json(result);
-	})
-}
+	});
+};
+
+exports.deleteIssue = (req, res) => {
+	issuesDAO.deleteIssue(req.params.projectName, req.body, result => {
+		return res.json(result);
+	});
+};

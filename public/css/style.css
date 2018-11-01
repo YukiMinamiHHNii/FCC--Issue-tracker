@@ -34,7 +34,7 @@ body{
 	padding: var(--general-spacing);
 }
 
-.action-form{
+.action-form, .issue-card{
 	margin: var(--general-spacing);
 	padding: var(--general-spacing);
 	background-color: var(--color-secondary);

@@ -3,7 +3,8 @@ const express = require("express"),
 	methodOver = require("method-override"),
 	dotenv = require("dotenv").load(),
 	helmet = require("helmet"),
-	issuesRouter = require("./src/routers/issuesRouter");
+	issuesRouter = require("./src/routers/issuesRouter"),
+	issuesViewerRouter = require("./src/routers/issuesViewerRouter");
 
 const app = express();
 
@@ -25,8 +26,13 @@ app.use(helmet.noSniff());
 
 app.use("/api", issuesRouter);
 
-app.get("/", (req, res) => {
-	res.render("index");
+app.use("/", issuesViewerRouter);
+
+app.use((req, res) => {
+	res
+		.status(404)
+		.type("text")
+		.send("Not found (will improve this later :v)");
 });
 
 app.listen(process.env.SERVER_PORT);

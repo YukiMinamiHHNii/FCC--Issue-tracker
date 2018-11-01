@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+html(lang="en")
+head
+	meta(charset="UTF-8")
+	link(rel="stylesheet", href="/css/bootstrap-grid.css")
+	link(rel="stylesheet", href="/css/style.css")
+	title Document
+body
+	main.container
+		section.row.justify-content-center
+			form.col-sm-12.col-lg-4.d-flex.flex-column.justify-content-center(method='POST' action='/api/issues/apitest')
+				div.action-form
+					h3.header Submit issue on apitest
+					div.row.spacing
+						label.col-sm-6(for="issue_title") Title:
+						input.col-sm-6(type="text" name="issue_title" placeholder='*Title' required)
+					div.row.spacing
+						label.col-sm-6(for="issue_text") Desc:
+						textarea.col-sm-6(name="issue_text" placeholder='*Text' required)
+					div.row.spacing
+						label.col-sm-6(for="created_by") Created by:
+						input.col-sm-6(type="text" name="created_by" placeholder='*Created by' required)
+					div.row.spacing
+						label.col-sm-6(for="assigned_to") Assigned to:
+						input.col-sm-6(type="text" name="assigned_to" placeholder='(opt)Assigned to')
+					div.row.spacing
+						label.col-sm-6(for="status_text") Status:
+						input.col-sm-6(type="text" name="status_text" placeholder='(opt)Status text')
+					div.row.justify-content-center
+						input.col-sm-6(type="submit" value='Submit issue')
+		section.row
+			each item in issues
+				article.col-sm-12.col-lg-6
+					div.issue-card.d-flex.flex-column.align-items-center
+						p id: #{item._id}
+						h3 #{item.issue_title}
+						p #{item.issue_text}
+						if item.status_text
+							b Status: #{item.status_text}
+						else
+							b Status: none
+						p Created by: #{item.created_by}
+						if item.assigned_to
+							p Assigned to: #{item.assigned_to}
+						else
+							p Assigned to: none	
+						p Created on: 
+						p #{item.created_on}
+						if item.updated_on
+							p Last updated: 
+							p #{item.updated_on}
+						else
+							p Last updated: never

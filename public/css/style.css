@@ -70,3 +70,7 @@ input[type="submit"]:hover {
 	background-color: var(--pad-btn-active);
 	color: var(--font-color);
 }
+
+table, th, td {
+   border: 1px solid black;
+}

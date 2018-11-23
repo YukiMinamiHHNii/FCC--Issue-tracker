@@ -14,95 +14,129 @@ function handleConnection(connected) {
 	);
 }
 
-exports.createIssue = (projectName, issueData, result) => {
-	handleConnection((connected, error) => {
-		if (!connected) {
-			return result({
-				status: `Error while retrieving ${projectName} issues`,
-				error: error //Remove this later
+function handlePromiseConnection() {
+	return new Promise((resolve, reject) => {
+		mongoose
+			.connect(process.env.MONGO_DB_CONNECTION)
+			.then(() => {
+				resolve();
+			})
+			.catch(err => {
+				reject({
+					status: "Error while connecting to DB",
+					error: err.message
+				});
 			});
-		} else {
-			checkProject({ projectName: projectName }, (err, dbRes) => {
-				if (err) {
-					return result(dbRes);
-				} else {
-					let projData = dbRes
-						? dbRes
-						: new Project({
-								projectName: projectName
-						  });
-					new Issue(issueData).save((err, savedIssue) => {
-						if (err) {
-							return result({
-								status: "Error while saving issue... are you missing fields?",
-								error: error
-							}); //Remove error later
-						} else {
-							saveProject(projData, savedIssue._id, savedProj => {
-								return result({
-									_id: savedIssue._id,
-									issue_title: savedIssue.issue_title,
-									issue_text: savedIssue.issue_text,
-									created_on: savedIssue.created_on,
-									updated_on: savedIssue.updated_on,
-									created_by: savedIssue.created_by,
-									assigned_to: savedIssue.assigned_to,
-									open: savedIssue.open,
-									status_text: savedIssue.status_text
-								});
-							});
-						}
-					});
-				}
+	});
+}
+
+exports.createIssue = (projectName, issueData) => {
+	return new Promise((resolve, reject) => {
+		handlePromiseConnection()
+			.then(() => {
+				return checkProject({ projectName: projectName });
+			})
+			.then(foundProject => {
+				let projData = foundProject
+					? foundProject
+					: new Project({
+							projectName: projectName
+					  });
+				return saveIssueData(issueData, projData);
+			})
+			.then(result => {
+				resolve({
+					_id: result._id,
+					issue_title: result.issue_title,
+					issue_text: result.issue_text,
+					created_on: result.created_on,
+					updated_on: result.updated_on,
+					created_by: result.created_by,
+					assigned_to: result.assigned_to,
+					open: result.open,
+					status_text: result.status_text
+				});
+			})
+			.catch(err => {
+				reject(err);
 			});
-		}
 	});
 };
 
-function checkProject(projectQuery, result) {
-	Project.findOne(projectQuery).exec((err, project) => {
-		if (err) {
-			return result(true, {
-				status: `Error while querying for ${projectName}`,
-				error: err //Remove this later
-			});
-		} else {
-			return project ? result(false, project) : result(false, false);
-		}
-	});
-}
-
-function saveProject(project, issueId, result) {
-	project.issues.push(issueId);
-	project.save({}, (err, savedProj) => {
-		return err
-			? result({ status: "Error while saving issue to project", error: error }) //Remove error later
-			: result({ _id: savedProj._id });
-	});
-}
-
-exports.readIssues = (projectName, filters, result) => {
-	handleConnection((connected, error) => {
-		if (!connected) {
-			return result({
-				status: `Error while retrieving ${projectName} issues`,
-				error: error //Remove this later
-			});
-		} else {
-			checkOpenFilter(filters);
-			Project.findOne({ projectName: projectName })
-				.populate({ path: "issues", select: { __v: 0 }, match: filters }) //Second argument to select just certain fields
-				.exec((err, res) => {
-					if (err) {
-						return result({
-							status: "Error, invalid filters",
-							error: err //Remove this later
-						});
-					} else {
-						return res ? result(res.issues) : result({});
-					}
+function checkProject(projectData) {
+	return new Promise((resolve, reject) => {
+		Project.findOne(projectData)
+			.exec()
+			.then(foundProject => {
+				resolve(foundProject);
+			})
+			.catch(err => {
+				reject({
+					status: `Error while querying for ${projectData.projectName}`,
+					error: err.message
 				});
-		}
+			});
+	});
+}
+
+function saveIssueData(issueData, projData) {
+	return new Promise((resolve, reject) => {
+		createIssueEntry(issueData)
+			.then(savedIssue => {
+				return saveProject(projData, savedIssue);
+			})
+			.then(entry => {
+				resolve(entry);
+			})
+			.catch(err => {
+				reject(err);
+			});
+	});
+}
+
+function createIssueEntry(issueData) {
+	return new Promise((resolve, reject) => {
+		Issue(issueData)
+			.save()
+			.then(savedIssue => {
+				resolve(savedIssue);
+			})
+			.catch(err => {
+				reject({ status: "Error while saving issue... are you missing fields?", error: err.message });
+			});
+	});
+}
+
+function saveProject(project, savedIssue) {
+	return new Promise((resolve, reject) => {
+		project.issues.push(savedIssue._id);
+		project
+			.save()
+			.then(savedProj => {
+				resolve(savedIssue);
+			})
+			.catch(err => {
+				reject({
+					status: "Error while saving issue to project",
+					error: err.message
+				});
+			});
+	});
+}
+
+exports.readIssues = (projectName, filters) => {
+	return new Promise((resolve, reject) => {
+		handlePromiseConnection()
+			.then(() => {
+				checkOpenFilter(filters);
+				return getIssuesByProject(projectName, filters);
+			})
+			.then(foundIssues => {
+				resolve(foundIssues);
+			})
+			.catch(err => {
+				reject(err);
+			});
 	});
 };
 
@@ -119,53 +153,51 @@ function checkOpenFilter(filters) {
 	}
 }
 
-exports.updateIssue = (projectName, updateIssue, result) => {
-	let checkData = checkUpdateData(updateIssue.issue_data);
-	if (!checkData) {
-		return result({ status: "No updated field sent" });
-	} else {
-		handleConnection((connected, error) => {
-			if (!connected) {
-				return result({
-					status: `Error while retrieving ${projectName} issues`,
-					error: error //Remove this later
+function getIssuesByProject(project, filters) {
+	return new Promise((resolve, reject) => {
+		Project.findOne({ projectName: project })
+			.populate({ path: "issues", select: { __v: 0 }, match: filters })
+			.exec()
+			.then(foundProject => {
+				if (foundProject) {
+					resolve(foundProject.issues);
+				} else {
+					resolve({});
+				}
+			})
+			.catch(err => {
+				reject({
+					status: "Error while reading issues",
+					error: err
 				});
-			} else {
-				checkProject(
-					{
+			});
+	});
+}
+
+exports.updateIssue = (projectName, updateIssue) => {
+	return new Promise((resolve, reject) => {
+		let checkData = checkUpdateData(updateIssue.issue_data);
+		if (!checkData) {
+			reject({ status: "No updated field sent" });
+		} else {
+			handlePromiseConnection()
+				.then(() => {
+					return checkIssueInProject({
 						projectName: projectName,
 						issues: updateIssue.issue_id
-					},
-					(err, dbRes) => {
-						if (err) {
-							return result(dbRes);
-						} else {
-							if (!dbRes) {
-								return result({
-									status: `Issue with id: ${
-										updateIssue.issue_id
-									} do not exist in ${projectName}`
-								});
-							} else {
-								Issue.findOneAndUpdate(
-									{ _id: updateIssue.issue_id },
-									{ $set: checkData },
-									{ new: true }
-								).exec((err, updatedIssue) => {
-									return err
-										? result({
-												status: `Could not update ${updateIssue.issue_id}`,
-												error: err //Remove this later
-										  })
-										: result({ status: "Successfully updated" });
-								});
-							}
-						}
-					}
-				);
-			}
-		});
-	}
+					});
+				})
+				.then(() => {
+					return updateIssueData(updateIssue.issue_id, checkData);
+				})
+				.then(result => {
+					resolve(result);
+				})
+				.catch(err => {
+					reject(err);
+				});
+		}
+	});
 };
 
 function checkUpdateData(updateData) {
@@ -179,69 +211,104 @@ function checkUpdateData(updateData) {
 	return Object.keys(result).length > 1 ? result : false;
 }
 
-exports.deleteIssue = (projectName, issueData, result) => {
-	if (!issueData.issue_id) {
-		return result({ status: "_id error" });
-	} else {
-		handleConnection((connected, error) => {
-			if (!connected) {
-				return result({
-					status: `Error while retrieving ${projectName} issues`,
-					error: error //Remove this later
+function checkIssueInProject(queryObj) {
+	return new Promise((resolve, reject) => {
+		checkProject(queryObj)
+			.then(foundData => {
+				if (foundData) {
+					resolve();
+				} else {
+					reject({
+						status: `Issue ${queryObj.issues} does not exist on project ${
+							queryObj.projectName
+						}`
+					});
+				}
+			})
+			.catch(err => {
+				reject({
+					status: `Error while checking issues in project ${
+						queryObj.projectName
+					}`,
+					error: err.error
 				});
-			} else {
-				checkProject(
-					{ projectName: projectName, issues: issueData.issue_id },
-					(err, dbRes) => {
-						if (err) {
-							return result(dbRes);
-						} else {
-							if (!dbRes) {
-								return result({
-									status: `Issue with id: ${
-										issueData.issue_id
-									} do not exist in ${projectName}`
-								});
-							} else {
-								removeRefIssue(
-									dbRes,
-									issueData.issue_id,
-									(status, removeRefError) => {
-										if (!status) {
-											return result(removeRefError);
-										} else {
-											Issue.findOneAndDelete({ _id: issueData.issue_id }).exec(
-												(err, res) => {
-													if (err) {
-														return result({
-															status: `Could not delete ${issueData.issue_id}`
-														});
-													} else {
-														return result({
-															status: `Deleted ${issueData.issue_id}`
-														});
-													}
-												}
-											);
-										}
-									}
-								);
-							}
-						}
-					}
-				);
-			}
-		});
-	}
+			});
+	});
+}
+
+function updateIssueData(issueId, checkData) {
+	return new Promise((resolve, reject) => {
+		Issue.findOneAndUpdate({ _id: issueId }, { $set: checkData }, { new: true })
+			.exec()
+			.then(updatedIssue => {
+				resolve({ status: "Successfully updated" });
+			})
+			.catch(err => {
+				reject({
+					status: `Could not update ${updateIssue.issueId}`,
+					error: err.message
+				});
+			});
+	});
+}
+
+exports.deleteIssue = (projectName, issueData) => {
+	return new Promise((resolve, reject) => {
+		if (!issueData.issue_id) {
+			reject({ status: "_id error" });
+		} else {
+			handlePromiseConnection()
+				.then(() => {
+					return checkIssueInProject({
+						projectName: projectName,
+						issues: issueData.issue_id
+					});
+				})
+				.then(() => {
+					return removeRefIssue(projectName, issueData.issue_id);
+				})
+				.then(() => {
+					return deleteIssueData(issueData.issue_id);
+				})
+				.then(result=>{
+					resolve(result);
+				})
+				.catch(err => {
+					reject(err);
+				});
+		}
+	});
 };
 
-function removeRefIssue(project, issueId, result) {
-	Project.update(project, { $pull: { issues: issueId } }, (err, res) => {
-		return err
-			? result(false, {
-					status: `Could not delete ${issueData.issue_id}`,
+function removeRefIssue(project, issueId) {
+	return new Promise((resolve, reject) => {
+		Project.update({projectName:project}, { $pull: { issues: issueId } })
+			.exec()
+			.then(res => {
+				resolve();
+			})
+			.catch(err => {
+				reject({
+					status: `Could not delete ${issueId}`,
 					error: err
-			  })
-			: result(true);
+				});
+			});
+	});
+}
+
+function deleteIssueData(issueId) {
+	return new Promise((resolve, reject) => {
+		Issue.findOneAndDelete({ _id: issueId })
+			.exec()
+			.then(deletedIssue => {
+				resolve({
+					status: `Deleted ${issueId}`
+				});
+			})
+			.catch(err => {
+				reject({
+					status: `Could not delete ${issueId}`
+				});
+			});
 	});
 }

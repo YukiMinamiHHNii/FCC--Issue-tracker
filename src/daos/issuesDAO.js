@@ -5,16 +5,7 @@ const mongoose = require("mongoose"),
 
 const filters = [""];
 
-function handleConnection(connected) {
-	mongoose.connect(
-		process.env.MONGO_DB_CONNECTION,
-		error => {
-			return error ? connected(false, error) : connected(true);
-		}
-	);
-}
-
-function handlePromiseConnection() {
+function handleConnection() {
 	return new Promise((resolve, reject) => {
 		mongoose
 			.connect(process.env.MONGO_DB_CONNECTION)
@@ -32,7 +23,7 @@ function handlePromiseConnection() {
 
 exports.createIssue = (projectName, issueData) => {
 	return new Promise((resolve, reject) => {
-		handlePromiseConnection()
+		handleConnection()
 			.then(() => {
 				return checkProject({ projectName: projectName });
 			})
@@ -129,7 +120,7 @@ function saveProject(project, savedIssue) {
 
 exports.readIssues = (projectName, filters) => {
 	return new Promise((resolve, reject) => {
-		handlePromiseConnection()
+		handleConnection()
 			.then(() => {
 				checkOpenFilter(filters);
 				return getIssuesByProject(projectName, filters);
@@ -183,7 +174,7 @@ exports.updateIssue = (projectName, updateIssue) => {
 		if (!checkData) {
 			reject({ status: "No updated field sent" });
 		} else {
-			handlePromiseConnection()
+			handleConnection()
 				.then(() => {
 					return checkIssueInProject({
 						projectName: projectName,
@@ -260,7 +251,7 @@ exports.deleteIssue = (projectName, issueData) => {
 		if (!issueData.issue_id) {
 			reject({ status: "_id error" });
 		} else {
-			handlePromiseConnection()
+			handleConnection()
 				.then(() => {
 					return checkIssueInProject({
 						projectName: projectName,

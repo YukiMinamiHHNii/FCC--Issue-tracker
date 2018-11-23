@@ -102,7 +102,10 @@ function createIssueEntry(issueData) {
 				resolve(savedIssue);
 			})
 			.catch(err => {
-				reject({ status: "Error while saving issue... are you missing fields?", error: err.message });
+				reject({
+					status: "Error while saving issue... are you missing fields?",
+					error: err.message
+				});
 			});
 	});
 }
@@ -270,7 +273,7 @@ exports.deleteIssue = (projectName, issueData) => {
 				.then(() => {
 					return deleteIssueData(issueData.issue_id);
 				})
-				.then(result=>{
+				.then(result => {
 					resolve(result);
 				})
 				.catch(err => {
@@ -282,7 +285,7 @@ exports.deleteIssue = (projectName, issueData) => {
 
 function removeRefIssue(project, issueId) {
 	return new Promise((resolve, reject) => {
-		Project.update({projectName:project}, { $pull: { issues: issueId } })
+		Project.update({ projectName: project }, { $pull: { issues: issueId } })
 			.exec()
 			.then(res => {
 				resolve();

@@ -1,32 +1,12 @@
 const mongoose = require("mongoose"),
 	Project = require("../models/projectModel"),
-	Issue = require("../models/issueModel"),
-	dotenv = require("dotenv").load();
+	Issue = require("../models/issueModel");
 
 const filters = [""];
 
-function handleConnection() {
-	return new Promise((resolve, reject) => {
-		mongoose
-			.connect(process.env.MONGO_DB_CONNECTION)
-			.then(() => {
-				resolve();
-			})
-			.catch(err => {
-				reject({
-					status: "Error while connecting to DB",
-					error: err.message
-				});
-			});
-	});
-}
-
 exports.createIssue = (projectName, issueData) => {
 	return new Promise((resolve, reject) => {
-		handleConnection()
-			.then(() => {
-				return checkProject({ projectName: projectName });
-			})
+		checkProject({ projectName: projectName })
 			.then(foundProject => {
 				let projData = foundProject
 					? foundProject
@@ -120,11 +100,8 @@ function saveProject(project, savedIssue) {
 
 exports.readIssues = (projectName, filters) => {
 	return new Promise((resolve, reject) => {
-		handleConnection()
-			.then(() => {
-				checkOpenFilter(filters);
-				return getIssuesByProject(projectName, filters);
-			})
+		checkOpenFilter(filters);
+		getIssuesByProject(projectName, filters)
 			.then(foundIssues => {
 				resolve(foundIssues);
 			})
@@ -174,13 +151,10 @@ exports.updateIssue = (projectName, updateIssue) => {
 		if (!checkData) {
 			reject({ status: "No updated field sent" });
 		} else {
-			handleConnection()
-				.then(() => {
-					return checkIssueInProject({
-						projectName: projectName,
-						issues: updateIssue.issue_id
-					});
-				})
+			checkIssueInProject({
+				projectName: projectName,
+				issues: updateIssue.issue_id
+			})
 				.then(() => {
 					return updateIssueData(updateIssue.issue_id, checkData);
 				})
@@ -251,13 +225,10 @@ exports.deleteIssue = (projectName, issueData) => {
 		if (!issueData.issue_id) {
 			reject({ status: "_id error" });
 		} else {
-			handleConnection()
-				.then(() => {
-					return checkIssueInProject({
-						projectName: projectName,
-						issues: issueData.issue_id
-					});
-				})
+			checkIssueInProject({
+				projectName: projectName,
+				issues: issueData.issue_id
+			})
 				.then(() => {
 					return removeRefIssue(projectName, issueData.issue_id);
 				})

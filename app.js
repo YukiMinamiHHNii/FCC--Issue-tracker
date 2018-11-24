@@ -3,10 +3,13 @@ const express = require("express"),
 	methodOver = require("method-override"),
 	dotenv = require("dotenv").load(),
 	helmet = require("helmet"),
+	connection= require("./src/utils/connection"),
 	issuesRouter = require("./src/routers/issuesRouter"),
 	issuesViewerRouter = require("./src/routers/issuesViewerRouter");
 
 const app = express();
+
+connection.handleConnection();
 
 app.set("view engine", "pug");
 app.use(express.static(__dirname + "/public"));

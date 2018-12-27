@@ -1,0 +1,21 @@
+version: "3"
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb-issue
+    restart: always
+    ports:
+      - 27020:27017
+    volumes:
+      - db-data:/data/db
+  issue-tracker:
+    image: issue-tracker
+    container_name: issue-tracker
+    restart: always
+    depends_on: 
+      - mongodb
+    ports:
+      - 3006:3000
+volumes:
+  db-data:
+    driver: local

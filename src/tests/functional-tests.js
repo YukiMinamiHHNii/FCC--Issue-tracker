@@ -8,11 +8,11 @@ chai.use(chaiHttp);
 let testId;
 
 suite("Functional Tests", () => {
-	suite("POST /api/issues/{project} => object with issue data", () => {
+	suite("POST /api/issue-tracker/issues/{project} => object with issue data", () => {
 		test("Every field filled in", done => {
 			chai
 				.request(app)
-				.post("/api/issues/test")
+				.post("/api/issue-tracker/issues/test")
 				.type("form")
 				.send({
 					issue_title: "Title",
@@ -51,7 +51,7 @@ suite("Functional Tests", () => {
 		test("Required fields filled in", done => {
 			chai
 				.request(app)
-				.post("/api/issues/test")
+				.post("/api/issue-tracker/issues/test")
 				.type("form")
 				.send({
 					issue_title: "Title2",
@@ -89,7 +89,7 @@ suite("Functional Tests", () => {
 		test("Missing required fields", done => {
 			chai
 				.request(app)
-				.post("/api/issues/test")
+				.post("/api/issue-tracker/issues/test")
 				.type("form")
 				.send({
 					created_by: "Functional Test - Missing required fields"
@@ -104,11 +104,11 @@ suite("Functional Tests", () => {
 		});
 	});
 
-	suite("PUT /api/issues/{project} => text", () => {
+	suite("PUT /api/issue-tracker/issues/{project} => text", () => {
 		test("No body", done => {
 			chai
 				.request(app)
-				.put("/api/issues/test")
+				.put("/api/issue-tracker/issues/test")
 				.type("form")
 				.send({ id: "some_id", issue_data: {} })
 				.end((err, res) => {
@@ -120,7 +120,7 @@ suite("Functional Tests", () => {
 		test("One field to update", done => {
 			chai
 				.request(app)
-				.put("/api/issues/test")
+				.put("/api/issue-tracker/issues/test")
 				.type("form")
 				.send({
 					issue_id: testId,
@@ -135,7 +135,7 @@ suite("Functional Tests", () => {
 		test("Multiple fields to update", done => {
 			chai
 				.request(app)
-				.put("/api/issues/test")
+				.put("/api/issue-tracker/issues/test")
 				.type("form")
 				.send({
 					issue_id: testId,
@@ -152,11 +152,11 @@ suite("Functional Tests", () => {
 		});
 	});
 
-	suite("GET /api/issues/{project} => Array of objects with issue data", () => {
+	suite("GET /api/issue-tracker/issues/{project} => Array of objects with issue data", () => {
 		test("No filter", done => {
 			chai
 				.request(app)
-				.get("/api/issues/test")
+				.get("/api/issue-tracker/issues/test")
 				.query({})
 				.end((err, res) => {
 					assert.equal(res.status, 200);
@@ -177,7 +177,7 @@ suite("Functional Tests", () => {
 		test("One filter", done => {
 			chai
 				.request(app)
-				.get("/api/issues/test")
+				.get("/api/issue-tracker/issues/test")
 				.query({ _id: testId })
 				.end((err, res) => {
 					assert.equal(res.status, 200);
@@ -198,7 +198,7 @@ suite("Functional Tests", () => {
 		test("Multiple filters (test for multiple fields you know will be in the db for a return)", done => {
 			chai
 				.request(app)
-				.get("/api/issues/test")
+				.get("/api/issue-tracker/issues/test")
 				.query({
 					_id: testId,
 					issue_title: "Functional Test - Multiple Fields to Update",
@@ -222,11 +222,11 @@ suite("Functional Tests", () => {
 		});
 	});
 
-	suite("DELETE /api/issues/{project} => text", () => {
+	suite("DELETE /api/issue-tracker/issues/{project} => text", () => {
 		test("No _id", done => {
 			chai
 				.request(app)
-				.delete("/api/issues/test")
+				.delete("/api/issue-tracker/issues/test")
 				.type("form")
 				.send({ issue_id: "" })
 				.end((err, res) => {
@@ -238,7 +238,7 @@ suite("Functional Tests", () => {
 		test("Valid _id", done => {
 			chai
 				.request(app)
-				.delete("/api/issues/test")
+				.delete("/api/issue-tracker/issues/test")
 				.type("form")
 				.send({ issue_id: testId })
 				.end((err, res) => {

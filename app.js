@@ -3,7 +3,8 @@ const express = require("express"),
 	methodOver = require("method-override"),
 	dotenv = require("dotenv").load(),
 	helmet = require("helmet"),
-	connection= require("./src/utils/connection"),
+	cors = require("cors"),
+	connection = require("./src/utils/connection"),
 	issuesRouter = require("./src/routers/issuesRouter"),
 	issuesViewerRouter = require("./src/routers/issuesViewerRouter");
 
@@ -26,6 +27,7 @@ app.use(
 );
 app.use(helmet.xssFilter());
 app.use(helmet.noSniff());
+app.use(cors());
 
 app.use("/api", issuesRouter);
 

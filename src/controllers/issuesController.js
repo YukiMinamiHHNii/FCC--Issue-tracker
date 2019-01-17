@@ -1,5 +1,16 @@
 const issuesDAO = require("../daos/issuesDAO");
 
+exports.readProjects = (req, res) => {
+	issuesDAO
+		.readProjects()
+		.then(result => {
+			return res.json(result);
+		})
+		.catch(err => {
+			return res.json(err);
+		});
+};
+
 exports.createIssue = (req, res) => {
 	issuesDAO
 		.createIssue(req.params.projectName, req.body)

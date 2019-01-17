@@ -2,6 +2,8 @@ const express = require("express"),
 	router = express.Router(),
 	issuesController = require("../controllers/issuesController");
 
+router.get("/projects", issuesController.readProjects);
+
 router.post("/issues/:projectName", issuesController.createIssue);
 
 router.get("/issues/:projectName", issuesController.readIssues);

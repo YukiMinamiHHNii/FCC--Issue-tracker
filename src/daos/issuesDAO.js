@@ -4,6 +4,33 @@ const mongoose = require("mongoose"),
 
 const filters = [""];
 
+exports.readProjects = () => {
+	return Project.aggregate([
+		{
+			$project: {
+				_id: 0,
+				projectName: 1,
+				issues: {
+					$cond: {
+						if: { $isArray: "$issues" },
+						then: { $size: "$issues" },
+						else: 0
+					}
+				}
+			}
+		}
+	])
+		.then(foundData => {
+			return foundData;
+		})
+		.catch(err => {
+			return Promise.reject({
+				status: "Error while retrieving projects data",
+				error: err
+			});
+		});
+};
+
 exports.createIssue = (projectName, issueData) => {
 	return checkProject({ projectName: projectName })
 		.then(foundProject => {

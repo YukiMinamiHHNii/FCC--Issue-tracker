@@ -36,7 +36,7 @@ exports.createIssue = (projectName, issueData) => {
 		.then(foundProject => {
 			let projData = foundProject
 				? foundProject
-				: new Project({ projectName: null });
+				: new Project({ projectName: projectName });
 			return saveIssueData(issueData, projData);
 		})
 		.then(result => {

@@ -21,7 +21,7 @@ exports.readProjects = () => {
 		}
 	])
 		.then(foundData => {
-			return foundData;
+			return { projects: foundData };
 		})
 		.catch(err => {
 			return Promise.reject({

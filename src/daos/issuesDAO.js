@@ -4,6 +4,20 @@ const mongoose = require("mongoose"),
 
 const filters = [""];
 
+exports.createProject = projectName => {
+	return Project({ projectName: projectName })
+		.save()
+		.then(savedProject => {
+			return { projectName: savedProject.projectName };
+		})
+		.catch(err => {
+			return Promise.reject({
+				status: "Error while saving project data",
+				error: err.message
+			});
+		});
+};
+
 exports.readProjects = () => {
 	return Project.aggregate([
 		{
@@ -26,7 +40,7 @@ exports.readProjects = () => {
 		.catch(err => {
 			return Promise.reject({
 				status: "Error while retrieving projects data",
-				error: err
+				error: err.mesasge
 			});
 		});
 };

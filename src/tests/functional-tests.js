@@ -227,8 +227,7 @@ suite("Functional Tests", () => {
 			chai
 				.request(app)
 				.delete("/api/issue-tracker/issues/test")
-				.type("form")
-				.send({ issue_id: "" })
+				.query({ _id: "" })
 				.end((err, res) => {
 					assert.equal(res.body.status, "_id error");
 					done();
@@ -239,8 +238,7 @@ suite("Functional Tests", () => {
 			chai
 				.request(app)
 				.delete("/api/issue-tracker/issues/test")
-				.type("form")
-				.send({ issue_id: testId })
+				.query({ _id: testId })
 				.end((err, res) => {
 					assert.equal(res.body.status, `Deleted ${testId}`);
 					done();

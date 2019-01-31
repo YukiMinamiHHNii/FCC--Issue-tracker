@@ -246,7 +246,7 @@ function updateIssueData(issueId, checkData) {
 }
 
 exports.deleteIssue = (projectName, issueData) => {
-	if (!issueData) {
+	if (!issueData._id) {
 		return Promise.reject({ status: "_id error" });
 	} else {
 		return checkIssueInProject({

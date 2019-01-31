@@ -58,7 +58,7 @@ exports.updateIssue = (req, res) => {
 
 exports.deleteIssue = (req, res) => {
 	issuesDAO
-		.deleteIssue(req.params.projectName, req.body)
+		.deleteIssue(req.params.projectName, req.query)
 		.then(result => {
 			return res.json(result);
 		})

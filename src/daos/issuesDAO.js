@@ -246,18 +246,18 @@ function updateIssueData(issueId, checkData) {
 }
 
 exports.deleteIssue = (projectName, issueData) => {
-	if (!issueData.issue_id) {
+	if (!issueData) {
 		return Promise.reject({ status: "_id error" });
 	} else {
 		return checkIssueInProject({
 			projectName: projectName,
-			issues: issueData.issue_id
+			issues: issueData._id
 		})
 			.then(() => {
-				return removeRefIssue(projectName, issueData.issue_id);
+				return removeRefIssue(projectName, issueData._id);
 			})
 			.then(() => {
-				return deleteIssueData(issueData.issue_id);
+				return deleteIssueData(issueData._id);
 			})
 			.then(result => {
 				return result;
@@ -286,7 +286,7 @@ function removeRefIssue(project, issueId) {
 }
 
 function deleteIssueData(issueId) {
-	return Issue.findOneAndDelete("{ _id: issueId }")
+	return Issue.findOneAndDelete({ _id: issueId })
 		.exec()
 		.then(deletedIssue => {
 			return {

@@ -29,7 +29,7 @@ app.use(helmet.xssFilter());
 app.use(helmet.noSniff());
 app.use(cors());
 
-app.use("/api/issue-tracker", issuesRouter);
+app.use("/api", issuesRouter);
 
 app.use("/", issuesViewerRouter);
 

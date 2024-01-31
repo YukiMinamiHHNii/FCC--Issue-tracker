@@ -173,7 +173,7 @@ function getIssuesByProject(project, filters) {
 }
 
 exports.updateIssue = (projectName, updateIssue) => {
-	let checkData = checkUpdateData(updateIssue.issue_data);
+	let checkData = checkUpdateData(JSON.parse(updateIssue.issue_data));
 	if (!checkData) {
 		return Promise.reject({ status: "No updated field sent" });
 	} else {
